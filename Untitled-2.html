@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f5;
+      color: #333;
+    }
+
+    .container {
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      color: #444;
+    }
+
+    .city-buttons button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .city-buttons button:hover {
+      background-color: #f37c04;
+    }
+
+    #weather-info {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>City Weather Checker</h1>
+    <div class="city-buttons">
+      <button data-city="New York">New York</button>
+      <button data-city="London">London</button>
+      <button data-city="Tokyo">Tokyo</button>
+      <button data-city="Colombo">Colombo</button>
+      <button data-city="Dubai">Dubai</button>
+    </div>
+    <div id="weather-info">
+      <p>Select a city to see the weather details.</p>
+    </div>
+  </div>
+
+  <script>
+    // Your OpenWeatherMap API key (replace with your actual key)
+    const API_KEY = "785d91fdb2c2980610a86b02d581ad91";
+    const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+
+    // Function to fetch and display weather data
+    async function getWeather(city) {
+      const url = `${BASE_URL}?q=${city}&appid=${API_KEY}&units=metric`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Weather data not found.");
+        }
+        const data = await response.json();
+        displayWeather(data);
+      } catch (error) {
+        document.getElementById("weather-info").innerHTML = `<p>${error.message}</p>`;
+      }
+    }
+
+    // Function to display weather data
+    function displayWeather(data) {
+      const { name, main, weather, wind } = data;
+
+      document.getElementById("weather-info").innerHTML = `
+        <h2>Weather in ${name}</h2>
+        <p><strong>Temperature:</strong> ${main.temp}°C</p>
+        <p><strong>Condition:</strong> ${weather[0].description}</p>
+        <p><strong>Wind Speed:</strong> ${wind.speed} m/s</p>
+      `;
+    }
+
+    // Add event listeners to buttons
+    document.querySelectorAll(".city-buttons button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const city = button.getAttribute("data-city");
+        getWeather(city);
+      });
+    });
+  </script>
+</body>
+</html>
